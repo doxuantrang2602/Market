@@ -1,0 +1,84 @@
+﻿@model Market.Models.Product
+
+@{
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header no-gutters has-tab m-l-0 m-r-0">
+    <div class="d-md-flex m-b-15 align-items-center justify-content-between">
+        <div class="media align-items-center m-b-15 ">
+            <div class="avatar avatar-image rounded" style="height: 150px; width: 150px">
+                <img src="~/img/product/@Model.Img" />
+
+            </div>
+            <div class="m-l-15">
+                <h4 class="m-b-0">@Html.DisplayFor(model => model.ProductName)</h4>
+                <p class="text-muted m-b-0">Mã sản phẩm: <span>@Html.DisplayFor(model => model.ProductId)</span> </p>
+            </div>
+        </div>
+        <div class="m-b-15">
+            <a class="btn btn-default m-r-20" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                <i class="anticon anticon-arrow-left"></i>
+                <span>Thoát</span>
+            </a>
+            <a class="btn btn-primary" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.ProductId">
+                <i class="anticon anticon-edit"></i>
+                <span>Sửa</span>
+            </a>
+            
+        </div>
+    </div>
+
+</div>
+    <div class="tab-content m-t-15">
+        <div class="tab-pane fade active show" id="product-overview">
+
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Chi tiết sản phẩm</h4>
+                    <div class="table-responsive">
+                        <table class="product-info-table m-t-20">
+                            <tbody>
+                                <tr>
+                                    <td>Danh mục:</td>
+                                    <td>@Html.DisplayFor(model => model.Category.CategoryName)</td>
+                                </tr>
+                                <tr>
+                                    <td>Đơn vị tính:</td>
+                                    <td>@Html.DisplayFor(model => model.Unit)</td>
+                                </tr>
+                                <tr>
+                                    <td>Giá tiền:</td>
+                                    <td>@Html.DisplayFor(model => model.Price)</td>
+                                </tr>
+                                <tr>
+                                    <td>Số lượng:</td>
+                                    <td>@Html.DisplayFor(model => model.Amount)</td>
+                                </tr>
+                                <tr>
+                                    <td>Nhà cung cấp:</td>
+                                    <td>@Html.DisplayFor(model => model.Supplier.SupplierName)</td>
+                                </tr>
+                                <tr>
+                                    <td>Mô tả:</td>
+                                    <td>@Html.DisplayFor(model => model.Detail)</td>
+                                </tr>
+                                <tr>
+                                    <td>Status:</td>
+                                    <td>
+                                        @Model.StatusString
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+

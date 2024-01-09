@@ -1,0 +1,44 @@
+﻿@model List<Product>
+@if (Model != null)
+{
+    @foreach (var item in Model)
+    {
+        <tr class="text-center">
+            <td>
+                @item.ProductId
+            </td>
+            <td>
+                <a class="d-flex align-items-center" asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">
+
+                    <img src="@Url.Content("~/img/product/" + item.Img)" class="img-fluid rounded" style="max-width: 60px" />
+                    <h3 class="custom-productName m-b-0 m-l-10">@item.ProductName</h3>
+                    @* <span class="m-b-0 m-l-10">@Html.DisplayFor(modelItem => item.ProductName)</span> *@
+                </a>
+
+
+            </td>
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Category.CategoryName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
+                @item.StatusString
+            </td>
+
+            <td class="text-right">
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@item.ProductId"><i class="anticon anticon-edit"></i></a>
+                <a class="btn btn-icon btn-hover btn-sm btn-rounded" asp-area="Admin" asp-controller="Products" asp-action="Delete" asp-route-id="@item.ProductId"><i class="anticon anticon-delete"></i></a>
+            </td>
+        </tr>
+    }
+}
+

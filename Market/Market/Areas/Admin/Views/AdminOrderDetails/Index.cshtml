@@ -1,0 +1,109 @@
+﻿@model IEnumerable<Market.Models.OrderDetail>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title"></h2>
+    <div class="header-sub-title">
+        <nav class="breadcrumb breadcrumb-dash">
+            <a asp-area="Admin" asp-controller="AdminOrders" asp-action="Home" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Trang chủ</a>
+            <span class="breadcrumb-item active">Chi tiết đơn hàng</span>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div id="invoice" class="p-h-30">
+                <div class="row m-t-20 lh-2">
+                    <div class="col-sm-6">
+                        <h3 class="p-l-10 m-t-10">THÔNG TIN ĐƠN HÀNG:</h3>
+                        <address class="p-l-10 m-t-10">
+                            <p><span class="font-weight-semibold text-dark">Họ và Tên:</span> @(ViewBag.Order.CustomerName)</p>
+                            <p><span class="font-weight-semibold text-dark">Địa chỉ:</span> @(ViewBag.Order.Address)</p>
+                            <p><span class="font-weight-semibold text-dark">Số điện thoại:</span> @(ViewBag.Order.Phone)</p>
+                            <p><span class="font-weight-semibold text-dark">Mã đơn hàng:</span> @(ViewBag.Order.OrderId)</p>
+                            @if (ViewBag.Order.Status == 1)
+                            {
+                                <p><span class="font-weight-semibold text-dark">Trạng thái đơn hàng:</span> Chờ xác nhận </p>
+                            }
+                            else if (ViewBag.Order.Status == 2)
+                            {
+                                <p><span class="font-weight-semibold text-dark">Trạng thái đơn hàng:</span> Đã xác nhận </p>
+                            }
+                            else if (ViewBag.Order.Status == 3)
+                            {
+                                <p><span class="font-weight-semibold text-dark">Trạng thái đơn hàng:</span> Đã hủy </p>
+                            }
+                            else if (ViewBag.Order.Status == 4)
+                            {
+                                <p><span class="font-weight-semibold text-dark">Trạng thái đơn hàng:</span> Đã giao </p>
+                            }
+                            <p><span class="font-weight-semibold text-dark">Ngày đặt hàng:</span> @(ViewBag.Order.OrderDate)</p>
+                            <p><span class="font-weight-semibold text-dark">Ghi chú:</span> @(ViewBag.Order.Note)</p>
+                        </address>
+                    </div>
+                </div>
+                <div>
+                    <a class="btn btn-secondary btn-tone m-r-5" asp-area="Admin" asp-controller="AdminOrderDetails" asp-action="Create" asp-route-orderID="@(ViewBag.Order.OrderId)">
+                        <i class="anticon anticon-plus-circle m-r-5"></i>
+                        <span>Thêm sản phẩm</span>
+                    </a>
+                    <a class="btn btn-secondary btn-tone" asp-area="Admin" asp-controller="AdminOrders" asp-action="Index">
+                        <i class="anticon anticon-arrow-left m-r-5"></i>
+                        <span>Quay lại</span>
+                    </a>
+                </div>
+                <div class="m-t-20">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Mã hóa đơn</th>
+                                    <th>Tên vật phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá bán</th>
+                                    <th>Giảm giá</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <th>@item.OrderId</th>
+                                        <td>@item.Product.ProductName</td>
+                                        <td>@item.Amount</td>
+                                        <td>@item.Price.Value.ToString("#,##0 VNĐ")</td>
+                                        <td>@item.Sale</td>
+                                        <td>@item.Total.Value.ToString("#,##0 VNĐ")</td>
+                                        <td>
+                                        <td>
+                                            <a asp-area="Admin" asp-controller="AdminOrderDetails" asp-action="Edit" asp-route-orderID="@item.OrderId" asp-route-productID="@item.ProductId"> <i class="anticon anticon-edit"></i></a>
+                                            <a asp-area="Admin" asp-controller="AdminOrderDetails" asp-action="Delete" asp-route-orderID="@item.OrderId" asp-route-productID="@item.ProductId"><i class="anticon anticon-delete"></i></a>
+                                        </td>
+                                    </tr>
+
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row m-t-30 lh-1-8">
+                        <div class="col-sm-12">
+                            <div class="float-right text-right">
+                                <h3>Tổng tiền: @(ViewBag.Order.TotalOrders)</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

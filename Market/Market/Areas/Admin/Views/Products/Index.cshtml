@@ -1,0 +1,208 @@
+﻿@model IEnumerable<Market.Models.Product>
+@{
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+}
+<div class="page-header">
+    <h2 class="header-title" style="font-size: 24px">Danh sách sản phẩm</h2>
+    <!-- Trong Razor View -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-8">
+                <div class="d-md-flex">
+                    <div class="m-b-10 m-r-15">
+                        <select class="custom-select" id="sltCategory" name="sltCategory" asp-items="@ViewBag.CategoryId" style="min-width: 180px;">
+                            <option selected disabled>Danh mục</option>
+                            <option value="">Tất cả</option>
+                        </select>
+                    </div>
+                    <div class="m-b-10">
+                        <select class="custom-select" id="sltStatus" name="sltStatus" asp-items="@ViewBag.Status" style="min-width: 180px;">
+                            <option selected disabled>Trạng thái</option>
+                            <option value="0">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-right">
+                <a class="btn btn-primary m-l-5" asp-area="Admin" asp-controller="Products" asp-action="Create">
+                    <i class="anticon anticon-plus-circle m-r-5"></i>
+                    <span>Thêm sản phẩm</span>
+                </a>
+            </div>
+        </div>
+        <div class="row m-b-20">
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                    <button id="btnSearch" class="btn btn-primary m-l-5" type="button"><i class="anticon anticon-search"></i> Tìm kiếm</button>
+                </div>
+
+            </div>
+            <div class="col-md-6">
+                <button id="btnRefresh" class="btn btn-success m-r-5"><i class="anticon anticon-reload"></i> Làm mới</button>
+            </div>
+        </div>
+        <div class="row" id="content">
+            <div class="col-sm-12 table-responsive">
+                <table class="table table-hover e-commerce-table" style="border-collapse: collapse; border-spacing: 20px;">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap">Mã sản phẩm</th>
+                            <th class="text-nowrap">Tên sản phẩm</th>
+                            <th class="text-nowrap">Danh mục</th>
+                            <th class="text-nowrap">Đơn vị tính</th>
+                            <th class="text-nowrap">Giá tiền</th>
+                            <th class="text-nowrap">Số lượng hàng</th>
+                            <th class="text-nowrap text-center">Trạng thái</th>
+                            <th class="text-nowrap">Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductId)
+                                </td>
+                                <td>
+                                    <a class="d-flex align-items-center" asp-area="Admin" asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId">
+
+                                        <img src="@Url.Content("~/img/product/" + item.Img)" class="img-fluid rounded" style="max-width: 60px" />
+                                        <h3 class="custom-productName m-b-0 m-l-10">@item.ProductName</h3>
+                                        @* <span class="m-b-0 m-l-10">@Html.DisplayFor(modelItem => item.ProductName)</span> *@
+                                    </a>
+
+
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Unit)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Price)
+                                </td>
+                                <td class="text-center">
+                                    @Html.DisplayFor(modelItem => item.Amount)
+                                </td>
+                                <td class="text-center">
+                                    @* @item.StatusString *@
+                                    @if (item.Status == 1)
+                                    {
+                                        <div>
+                                            <div class="badge badge-success badge-dot m-r-10"></div>
+                                            <span>Đang kinh doanh</span>
+                                        </div>
+                                    }
+                                    else if (item.Status == 2)
+                                    {
+                                        <div>
+                                            <div class="badge badge-danger badge-dot m-r-10"></div>
+                                            <span>Ngừng kinh doanh</span>
+                                        </div>
+                                    }
+                                </td>
+
+                                <td class="text-center">
+                                    <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@item.ProductId"><i class="anticon anticon-edit"></i></a>
+                                    
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+            @* Thanh nav-phân trang *@
+                <ul class="pagination m-l-20 m-t-5">
+                    @for (int i = 1; i <= ViewBag.pageNum; i++)
+                    {
+                        <li class="page-item active" page="@i"
+                        @(ViewBag.s != null ? " s='@ViewBag.s'" : "")
+                        @(ViewBag.cid != null ? " cid='@ViewBag.cid'" : "")
+                        @(ViewBag.keyword != null ? " keyword='@ViewBag.keyword'" : "") >
+                            <a class="page-link" style="border-radius: 5px;">@i</a>
+                        </li>
+                    }
+                </ul>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        $('body').on('click', 'li.page-item', function (e) {
+            var page = $(this).attr("page");
+            var s = $(this).attr("s");
+            var cid = $(this).attr("cid");
+            var keyword = $(this).attr("keyword");
+            var data = { s: s, cid: cid, keyword: keyword, pageIndex: page };
+            $.ajax({
+                url: "ProductFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("select#sltCategory").change(function (e) {
+            var category = $("#sltCategory").val();
+            var status = $("#sltStatus").val();
+            var keyword = $("#keyword").val();
+            var data = { s: status, cid: category, keyword: keyword };
+            $.ajax({
+                url: "ProductFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("select#sltStatus").change(function (e) {
+            var category = $("#sltCategory").val();
+            var status = $("#sltStatus").val();
+            var keyword = $("#keyword").val();
+            var data = { s: status, cid: category, keyword: keyword };
+            $.ajax({
+                url: "ProductFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("button#btnSearch").click(function (e) {
+            var category = $("#sltCategory").val();
+            var status = $("#sltStatus").val();
+            var keyword = $("#keyword").val();
+            var data = { s: status, cid: category, keyword: keyword };
+            $.ajax({
+                url: "ProductFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("#btnRefresh").click(function () {
+            window.location.href = '/Admin/Products/Index';
+        });
+    </script>
+}

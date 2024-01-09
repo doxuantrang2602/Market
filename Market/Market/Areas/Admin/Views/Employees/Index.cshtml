@@ -1,0 +1,132 @@
+﻿
+
+@{
+    ViewData["Title"] = "Index";
+   // Layout = "~/Views/Shared/_AdminLayout.cshtml";
+   Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+}
+
+
+@model IEnumerable<Employee>
+<link rel="stylesheet" type="text/css" href="~/adminassets/css/pagin-btn-create.css" />
+@{
+    ViewData["Title"] = "Index";
+}@* Thêm form tìm kiếm *@
+<div class="create">
+    <a asp-action="Create" class="btn btn-primary">&#43; Thêm nhân viên </a>
+</div>
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">@ViewBag.SuccessMessage</div>
+}
+
+<br>
+@* Thêm form tìm kiếm *@
+<form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+    <div class="input-group">
+        <input id="keyword" class="form-control" name="keyword"
+               type="text" placeholder="Tìm kiếm nhân viên" />
+        <button id="btnSearch" class="btn btn-primary" type="button">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+</form>
+<br>
+<br>
+<div id="content">
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.First().EmployeeId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().EmployeeName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Position)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.First().Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model){
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmployeeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Position)
+                </td>
+                <td>
+                    @if (item.Status == 0)
+                    {
+                        <span> <img src="~/adminassets/images/status/inactive.png" width="10" height="10"/> Không hoạt động</span>
+                    }
+                    else if (item.Status == 1) 
+                    {
+                        <span><img src="~/adminassets/images/status/active.png" width="10" height="10" /> &nbsp; Hoạt động</span>
+                    }                
+                   </td>
+                <td> 
+                    <a asp-action="Edit" asp-route-id="@item.EmployeeId"><img src="~/adminassets/images/button/edit.png" alt="Edit" width="16" height="16" /></a>
+@*                     &nbsp; <a asp-action="Delete" asp-route-id="@item.EmployeeId"><img src="~/adminassets/images/button/delete.png" alt="Delete" width="13" height="13" /></a>
+ *@                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* Thêm thanh nav-phân trang *@
+<ul class="pagination">
+    @for (int i = 1; i <= ViewBag.pageNum; i++)
+    {
+        <li class="page-item" page="@i"     
+        @(ViewBag.keyword != null ? "keyword='@ViewBag.keyword'" : "")>
+            <a class="page-link">@i</a>
+        </li>
+    }
+</ul>
+</div>
+
+@section Scripts{
+    <script>
+        $('body').on('click', 'li.page-item', function (e) {
+            var page = $(this).attr("page");           
+            var keyword = $(this).attr("keyword");
+            var data = { keyword: keyword, pageIndex: page };
+            $.ajax({
+                url: "EmployeeFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+     });
+
+  $("button#btnSearch").click(function (e){
+    var keyword = $("#keyword").val();
+    var data = { keyword: keyword };
+    $.ajax({
+        url: "EmployeeFilter",
+        data: data,    
+        success: function (response) {
+            $("div#content").html(response);
+        }
+    });
+  });
+    </script>
+}

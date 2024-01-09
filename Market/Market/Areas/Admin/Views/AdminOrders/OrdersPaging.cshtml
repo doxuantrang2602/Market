@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Order>
+<table class="table table-hover e-commerce-table">
+	<thead>
+		<tr>
+			<th>Mã hóa đơn</th>
+			<th>Mã nhân viên</th>
+			<th>Trạng thái đơn hàng</th>
+			<th>Ngày tạo đơn</th>
+			<th>Tổng tiền</th>
+			<th>Thao tác</th>
+		</tr>
+	</thead>
+	<tbody id="searchOrder">
+		@if (Model != null)
+		{
+			foreach (var item in Model)
+			{
+				<tr>
+					<td>
+						<a class="link m-r-5" asp-area="Admin" asp-controller="AdminOrderDetails" asp-action="Index" asp-route-id="@item.OrderId">@item.OrderId</a>
+					</td>
+					<td>@item.EmployeeId</td>
+					<td>
+						@if (item.Status == 1)
+						{
+							<div class="d-flex align-items-center">
+								<div class="badge badge-danger badge-dot m-r-10"></div>
+								<div>Chờ xác nhận</div>
+							</div>
+						}
+						else if (item.Status == 2)
+						{
+							<div class="d-flex align-items-center">
+								<div class="badge badge-success badge-dot m-r-10"></div>
+								<div>Đã xác nhận</div>
+							</div>
+						}
+						else if (item.Status == 3)
+						{
+							<div class="d-flex align-items-center">
+								<span class="status-icon">&#x2718;</span>
+								<div>Đã hủy đơn</div>
+							</div>
+						}
+						else if (item.Status == 4)
+						{
+							<div class="d-flex align-items-center">
+								<span class="status-icon">&#x2714;</span>
+								<div>Đã giao</div>
+							</div>
+						}
+					</td>
+					<td>@item.OrderDate</td>
+					<td>@item.TotalOrders VNĐ</td>
+					<td>
+						<a class="btn btn-outline-primary m-r-5" asp-area="Admin" asp-controller="AdminOrders" asp-action="Edit" asp-route-id="@item.OrderId">Chỉnh sửa</a>
+						<a class="btn btn-outline-primary m-r-5" asp-area="Admin" asp-controller="AdminOrders" asp-action="Delete" asp-route-id="@item.OrderId">Xóa</a>
+					</td>
+				</tr>
+			}
+		}
+	</tbody>
+
+</table>
+
+<ul class="pagination m-l-20 m-t-5">
+	@for (int i = 1; i <= ViewBag.pageNum; i++)
+	{
+		<li class="page-item active" page="@i"
+		@(ViewBag.status != null ? "status='@ViewBag.status'" : "")
+		@(ViewBag.keyword != null ? "keyword='@ViewBag.keyword'" : "")>
+			<a class="page-link" style="border-radius: 5px;">@i</a>
+		</li>
+	}
+</ul>

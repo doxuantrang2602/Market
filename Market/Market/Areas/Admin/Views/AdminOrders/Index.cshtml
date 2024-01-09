@@ -1,0 +1,231 @@
+﻿
+@{
+	ViewData["Title"] = "Danh sách đơn hàng";
+	Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+@model IEnumerable<Order>
+<div class="page-header">
+	<div class="header-sub-title">
+		<nav class="breadcrumb breadcrumb-dash">
+			<a asp-area="Admin" asp-controller="Home" asp-action="Index" class="breadcrumb-item"><i class="anticon anticon-home m-r-5"></i>Trang chủ</a>
+			<span class="breadcrumb-item active">Danh sách đơn hàng</span>
+		</nav>
+	</div>
+</div>
+<div class="row m-b-30">
+	<div class="col-lg-3 col-md-3 col-sm-12">
+		<div class="input-affix m-v-10">
+			<select class="custom-select" id="txtStatus" name="txtStatus" asp-items="ViewBag.TrangThaiDonHang">
+				<option selected>Chọn trạng thái</option>
+				<option value="0">Tất cả</option>
+			</select>
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-3 col-sm-12">
+		<div class="input-affix m-v-10">
+			<label>Thời gian từ</label>
+			<input type="text" class="form-control datepicker-input" name="start" placeholder="From">
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-3 col-sm-12">
+		<div class="input-affix m-v-10">
+			<label>Thời gian đến</label>
+			<input id="td" type="text" class="form-control datepicker-input" name="end" placeholder="To">
+		</div>
+	</div>
+	<div class="col-lg-3 col-md-3 col-sm-12">
+		<div class="text-right">
+			<a class="btn btn-primary" asp-area="Admin" asp-controller="AdminOrders" asp-action="Create">
+				<i class="anticon anticon-plus-circle m-r-5"></i>
+				<span>Tạo đơn hàng</span>
+			</a>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="input-affix m-v-10">
+					<i class="prefix-icon anticon anticon-search opacity-04"></i>
+					<input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm đơn hàng">
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="input-affix m-v-10">
+					<button id="btnSearch" class="btn btn-danger m-r-5"><i class="anticon anticon-search"></i> Tìm kiếm</button>
+					<button id="btnRefresh" class="btn btn-default m-r-5"><i class="anticon anticon-reload"></i> Làm lại</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="paging" class="table-responsive">
+	<table class="table table-hover e-commerce-table">
+		<thead>
+			<tr>
+				<th>Mã hóa đơn</th>
+				<th>Mã nhân viên</th>
+				<th>Trạng thái đơn hàng</th>
+				<th>Ngày tạo đơn</th>
+				<th>Tổng tiền</th>
+				<th>Thao tác</th>
+			</tr>
+		</thead>
+		<tbody id="searchOrder">
+			@if (Model != null)
+			{
+				foreach (var item in Model)
+				{
+
+					<tr>
+						<td>
+							<a class="link m-r-5" asp-area="Admin" asp-controller="AdminOrderDetails" asp-action="Index" asp-route-id="@item.OrderId">@item.OrderId</a>
+						</td>
+						<td>@item.EmployeeId</td>
+						<td>
+							@if (item.Status==1)
+							{
+								<div class="d-flex align-items-center">
+									<div class="badge badge-danger badge-dot m-r-10"></div>
+									<div>Chờ xác nhận</div>
+								</div>
+							}
+							else if (item.Status == 2)
+							{
+								<div class="d-flex align-items-center">
+									<div class="badge badge-success badge-dot m-r-10"></div>
+									<div>Đã xác nhận</div>
+								</div>
+							}
+							else if (item.Status == 3)
+							{
+								<div class="d-flex align-items-center">
+									<span class="status-icon">&#x2718;</span>
+									<div>Đã hủy đơn</div>
+								</div>
+							}
+							else if (item.Status == 4)
+							{
+								<div class="d-flex align-items-center">
+									<span class="status-icon">&#x2714;</span>
+									<div>Đã giao</div>
+								</div>
+							}
+						</td>
+						<td>@item.OrderDate</td>
+						<td>@item.TotalOrders VNĐ</td>
+						<td>
+							<a class="btn btn-outline-primary m-r-5" asp-area="Admin" asp-controller="AdminOrders" asp-action="Edit" asp-route-id="@item.OrderId">Chỉnh sửa</a>
+							<a class="btn btn-outline-primary m-r-5" asp-area="Admin" asp-controller="AdminOrders" asp-action="Delete" asp-route-id="@item.OrderId">Xóa</a>
+						</td>
+					</tr>
+				}
+			}
+		</tbody>
+
+	</table>
+	<ul class="pagination m-l-20 m-t-5">
+			@for (int i = 1; i <= ViewBag.pageNum; i++)
+			{
+				<li class="page-item active" page="@i"
+			    @(ViewBag.status != null ? "status='@ViewBag.status'" : "")
+				@(ViewBag.keyword != null ? "keyword='@ViewBag.keyword'" : "") >
+				<a class="page-link" style="border-radius: 5px;">@i</a>
+				</li>
+			}
+		</ul>
+</div>
+
+@* @section Scripts{
+	<script>
+		$(document).ready(function () {
+			$("#btnSearch").click(function () {
+				//var status = $(this).val();
+				var idSearch = $('#keyword').val();
+				$.ajax({
+					url: '/Admin/Search/FindOrder/',
+					datatype: "json",
+					type: "POST",
+					data: {
+						keyword: idSearch
+					},
+					async: true,
+					success: function (results) {
+						$("#searchOrder").html("");
+						$("#searchOrder").html(results)
+					},
+					error: function (xhr) {
+						alert('error')
+					}
+				});x
+			});
+			$("#btnRefresh").click(function () {
+				window.location.href = '/Admin/AdminOrders/Index';
+			});
+
+			$("#txtStatus").change(function () {
+				var selectedStatus = $(this).val();
+				$.ajax({
+					url: '/Admin/Search/FilterOrderByStatus',
+					datatype: "json",
+					type: "GET",
+					data: {
+						TrangThai: selectedStatus
+					},
+					async: true,
+					success: function (results) {
+						$("#searchOrder").html("");
+						$("#searchOrder").html(results);
+					},
+					error: function (xhr) {
+						alert('error');
+					}
+				});
+			});
+			
+		});
+	</script>
+}
+ *@
+@section Scripts{
+	<script>
+		function filterOrders(pageIndex) {
+			var status = $('#txtStatus').val() || '';
+			var keyword = $('#keyword').val() || '';
+			var data = {
+				status: status,
+				keyword: keyword,
+				pageIndex: pageIndex || ''
+			};
+			$.ajax({
+				url: '/Admin/AdminOrders/FilterOrder',
+				data: data,
+				success: function (results) {
+					$("div#paging").html(results);
+				}
+			});
+		}
+		$('body').on('click', 'li.page-item', function (e) {
+			var page = $(this).attr("page");
+			filterOrders(page);
+		});
+		$("#txtStatus").change(function () {
+			filterOrders();
+		});
+		$("#btnSearch").click(function (e) {
+			filterOrders();
+		});
+
+
+		$("#btnRefresh").click(function () {
+			window.location.href = '/Admin/AdminOrders/Index';
+		});
+		$(document).ready(function () {
+			$('.datepicker-input').datepicker();
+		});
+
+
+	</script>
+}
+
+

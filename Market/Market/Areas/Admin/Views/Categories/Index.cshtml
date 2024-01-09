@@ -1,0 +1,149 @@
+﻿@model IEnumerable<Market.Models.Category>
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="page-header">
+    <h2 class="header-title" style="font-size: 24px">Danh sách danh mục</h2>
+</div>
+<div class="card">
+    <div class="card-body">
+        <div class="row m-b-30">
+            <div class="col-lg-8">
+                <div class=" col-lg-5 m-b-10">
+                    <select class="custom-select" id="sltStatus" name="sltStatus" asp-items="@ViewBag.Status" style="min-width: 180px;">
+                        <option selected disabled>Trạng thái</option>
+                        <option value="0">Tất cả</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class=" col-lg-4 text-right">
+                <a class="btn btn-primary m-l-5" asp-area="Admin" asp-controller="Categories" asp-action="Create">
+                    <i class="anticon anticon-plus-circle m-r-5"></i>
+                    <span>Thêm danh mục</span>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="row m-b-20">
+            <div class="col-sm-6">
+                <div class="input-group">
+                    <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm danh mục">
+                    <button id="btnSearch" class="btn btn-primary m-l-5" type="button"><i class="anticon anticon-search"></i> Tìm kiếm</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <button id="btnRefresh" class="btn btn-success m-r-5"><i class="anticon anticon-reload"></i> Làm mới</button>
+            </div>
+        </div>
+    
+    <div class="row" id="content">
+        <div class="col-sm-12 table-responsive">
+            <table class="table table-hover e-commerce-table ">
+                <thead>
+                    <tr class="text-center">
+                        <th class="text-nowrap">Mã danh mục</th>
+                        <th class="text-nowrap">Tên danh mục</th>
+                        <th class="text-nowrap">Trạng thái</th>
+                        <th class="text-nowrap">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="text-center">
+                            <td>
+                                @item.CategoryId
+                            </td>
+                            <td>
+                                @item.CategoryName
+                            </td>
+                            <td>
+                                @*  @item.StatusString *@
+                                @if (item.Status == 1)
+                                {
+                                    <div>
+                                        <div class="badge badge-success badge-dot m-r-10"></div>
+                                        <span>Đang kinh doanh</span>
+                                    </div>
+                                }
+                                else if (item.Status == 2)
+                                {
+                                    <div>
+                                        <div class="badge badge-danger badge-dot m-r-10"></div>
+                                        <span>Ngừng kinh doanh</span>
+                                    </div>
+                                }
+                            </td>
+
+                            <td>
+                                <a class="btn btn-icon btn-hover btn-sm btn-rounded pull-right" asp-area="Admin" asp-controller="Categories" asp-action="Edit" asp-route-id="@item.CategoryId"><i class="anticon anticon-edit"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+        @* Thanh nav-phân trang *@
+        <ul class="pagination m-l-20 m-t-5">
+            @for (int i = 1; i <= ViewBag.pageNum; i++)
+            {
+                <li class="page-item active" page="@i"
+                @(ViewBag.s != null ? " s='@ViewBag.s'" : "")
+                @(ViewBag.keyword != null ? " keyword='@ViewBag.keyword'" : "") >
+                    <a class="page-link" style="border-radius: 5px;">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
+    </div>
+</div>
+@section ScriptsCT{
+    <script>
+        $('body').on('click', 'li.page-item', function (e) {
+            var page = $(this).attr("page");
+            var s = $(this).attr("s");
+            var keyword = $(this).attr("keyword");
+            var data = { s: s, keyword: keyword, pageIndex: page };
+            $.ajax({
+                url: "CategoryFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        
+        $("select#sltStatus").change(function (e) {
+            var status = $("#sltStatus").val();
+            var keyword = $("#keyword").val();
+            var data = { s: status, keyword: keyword };
+            $.ajax({
+                url: "CategoryFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("button#btnSearch").click(function (e) {
+            var status = $("#sltStatus").val();
+            var keyword = $("#keyword").val();
+            var data = { s: status, keyword: keyword };
+            $.ajax({
+                url: "CategoryFilter",
+                data: data,
+                success: function (response) {
+                    $("div#content").html(response);
+                }
+            });
+        });
+        $("#btnRefresh").click(function () {
+            window.location.href = '/Admin/Categories/Index';
+        });
+    </script>
+}

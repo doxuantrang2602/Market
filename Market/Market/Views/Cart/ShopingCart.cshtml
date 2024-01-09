@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/MyLayout.cshtml";
+    decimal? tong = 0;
+}
+
+<!-- Shoping Cart Section Begin -->
+@model List<ShoppingCart>
+<section class="breadcrumb-section set-bg" data-setbg="img/breadcrumb.jpg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>Shopping Cart</h2>
+                    <div class="breadcrumb__option">
+                        <a asp-controller="Home" asp-action="Index">Home</a>
+                        <span>Shopping Cart</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="shoping-cart spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="shoping__cart__table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="shoping__product">Products</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach(var item in Model)
+                            {
+                                tong += @item.Total;
+                                <tr>
+                                    <td class="shoping__cart__item" >
+                                        <img src="~/img/cart/@item.Img" alt="">
+                                        <h5>@item.ProductName</h5>
+                                    </td>
+                                    <td class="shoping__cart__price">
+                                        @item.Price.Value.ToString("#,##k VND")
+                                    </td>
+                                    <td class="shoping__cart__quantity">
+                                        <div class="quantity">
+                                            <div class="pro-qty">
+                                                <input type="text" value="@item.Amount" asp-for="@item.Amount">
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="shoping__cart__total">
+                                            @item.Total.Value.ToString("#,##k VND")
+                                    </td>
+                                    <td class="shoping__cart__item__close">
+                                        <a class="icon_close" asp-controller="Cart" asp-action="DeleteItem" asp-route-id="@item.ProductId"></a>
+                                    </td>
+                                    <td class="shoping__cart__item__check">
+                                        <button type="submit" class="icon_check"></button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <form asp-controller="Oders" asp-action="Update" asp-route-total="@tong">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="shoping__checkout">
+                    <h5>Cart Total</h5>
+                    <ul>
+                            <li>Total <span>@tong.Value.ToString("#,##k VND")</span></li>
+                    </ul>
+                    <button type="submit" class="primary-btn">PROCEED TO CHECKOUT</button>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</section>
